@@ -1,7 +1,7 @@
 import ContactEditor from './components/ContactEditor';
 import ContactList from './components/ContactList';
 import './App.css';
-import { useReducer, useRef, useCallback } from 'react';
+import { useReducer, useRef, useCallback, createContext, useMemo } from 'react';
 
 function reducer(state, action) {
   switch (action.type) {
@@ -13,6 +13,9 @@ function reducer(state, action) {
       return state;
   }
 }
+
+export const ContactStateContext = createContext();
+export const ContactDispatchContext = createContext();
 
 function App() {
   const [contacts, dispatch] = useReducer(reducer, []);
@@ -38,15 +41,23 @@ function App() {
     });
   }, []);
 
+  const memoizedDispatch = useMemo(() => {
+    return { onAddContact, onDeleteContact };
+  }, []);
+
   return (
     <div className="App">
       <h2>Contact List</h2>
-      <section>
-        <ContactEditor onAddContact={onAddContact} />
-      </section>
-      <section>
-        <ContactList contacts={contacts} onDeleteContact={onDeleteContact} />
-      </section>
+      <ContactStateContext.Provider value={contacts}>
+        <ContactDispatchContext.Provider value={memoizedDispatch}>
+          <section>
+            <ContactEditor />
+          </section>
+          <section>
+            <ContactList />
+          </section>
+        </ContactDispatchContext.Provider>
+      </ContactStateContext.Provider>
     </div>
   );
 }

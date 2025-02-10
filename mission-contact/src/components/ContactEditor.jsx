@@ -1,7 +1,9 @@
 import './ContactEditor.css';
-import { useState, useRef } from 'react';
+import { useState, useRef, useContext } from 'react';
+import { ContactDispatchContext } from '../App';
 
-export default function ContactEditor({ onAddContact }) {
+export default function ContactEditor() {
+  const { onAddContact } = useContext(ContactDispatchContext);
   const [state, setState] = useState({
     name: '',
     contact: '',
